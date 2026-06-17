@@ -1,5 +1,7 @@
 #include "camera.h"
 
+#include <algorithm>
+
 #include "entity/entity.h"   // full Entity, needed by follow()/followSmooth()
 
 namespace arx {
@@ -12,11 +14,33 @@ Camera Camera::centered() {
 
 Camera2D Camera::raw() const {
     Camera2D c;
-    c.offset   = { offset.x, offset.y };
+    c.offset   = { offset.x + shakeOffset.x, offset.y + shakeOffset.y };
     c.target   = { target.x, target.y };
     c.rotation = rotation;
     c.zoom     = zoom;
     return c;
+}
+
+void Camera::clampToBounds(Vec2 mn, Vec2 mx, Vec2 viewSize) {
+    float halfW = (viewSize.x * 0.5f) / zoom;
+    float halfH = (viewSize.y * 0.5f) / zoom;
+    float loX = mn.x + halfW, hiX = mx.x - halfW;
+    float loY = mn.y + halfH, hiY = mx.y - halfH;
+    target.x = (loX > hiX) ? (mn.x + mx.x) * 0.5f : std::min(std::max(target.x, loX), hiX);
+    target.y = (loY > hiY) ? (mn.y + mx.y) * 0.5f : std::min(std::max(target.y, loY), hiY);
+}
+
+void Camera::shake(float magnitude, float duration) {
+    shakeMag = magnitude; shakeDur = duration; shakeTime = duration;
+}
+
+void Camera::update(float dt) {
+    if (shakeTime <= 0.0f) { shakeOffset = { 0.0f, 0.0f }; return; }
+    shakeTime -= dt;
+    if (shakeTime <= 0.0f) { shakeTime = 0.0f; shakeOffset = { 0.0f, 0.0f }; return; }
+    float k = shakeMag * (shakeTime / shakeDur);   // decays to 0 over the duration
+    shakeOffset = { GetRandomValue(-100, 100) / 100.0f * k,
+                    GetRandomValue(-100, 100) / 100.0f * k };
 }
 
 void Camera::follow(const Entity& e) { target = e.position; }

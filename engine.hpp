@@ -32,9 +32,14 @@
 #include "entity/p_registry.h" // PersistentRegistry: entities that outlive scenes
 
 // --- engine: core ----------------------------------------------------------
-#include "game/input.h"             // Input: action -> key bindings, isDown/isPressed/isReleased
+#include "game/input.h"             // Input: actions -> key/mouse/gamepad, isDown/isPressed/isReleased
 #include "game/function_registry.h" // FunctionRegistry: named, reusable functions
+#include "game/timing.h"            // Timer / Interval / Tween + easing curves
+#include "game/audio.h"             // Audio: sound effects + music
+#include "game/blackboard.h"        // Blackboard: global key/value state + save/load
+#include "game/textutil.h"          // measureText / centeredX-Y helpers
 #include "game/camera.h"            // Camera: a 2D follow-cam the scene draws through
+#include "game/tilecollide.h"       // TileGrid + resolveTileCollision (AABB vs solid tiles)
 #include "game/game.h"              // Game (window + loop) and Rng
 #include "game/scene.h"             // Scene + SceneContext
 

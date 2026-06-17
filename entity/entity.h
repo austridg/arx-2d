@@ -4,6 +4,9 @@
 #include <vector>
 #include <string>
 #include <functional>
+#include <unordered_map>
+#include <typeindex>
+#include <utility>
 
 #include "rad2d.hpp"
 
@@ -34,8 +37,17 @@ public:
     Vec2  velocity;
     float rotation = 0.0f;           // radians
 
-    // --- collision: a circle centered on `position` ---
-    float radius = 0.0f;             // 0 = non-colliding (mirrors null drawable = invisible)
+    // --- collision shape, centered on `position` ---
+    enum class Shape { Circle, Box };
+    Shape shape = Shape::Circle;
+    float radius = 0.0f;             // Circle: 0 = non-colliding (mirrors null drawable = invisible)
+    Vec2  halfExtents;               // Box: half width/height; (0,0) = non-colliding
+
+    // does this entity take part in collision at all?
+    bool collidable() const {
+        return shape == Shape::Circle ? radius > 0.0f
+                                      : (halfExtents.x > 0.0f && halfExtents.y > 0.0f);
+    }
 
     bool  alive = true;              // set false -> reaped by the owning scene/registry
 
@@ -48,11 +60,35 @@ public:
     // --- collision responders: how this entity reacts to overlapping another ---
     std::vector<CollisionFn> collisionResponders;
 
+    // --- components: typed, queryable per-entity state (Health, Inventory, ...) ---
+    // shared across this entity's behaviors/responders/systems without manual plumbing.
+    std::unordered_map<std::type_index, std::shared_ptr<void>> components;
+
     Entity() = default;
     explicit Entity(int id);
 
     void addBehavior(BehaviorFn b);
     void addCollisionResponder(CollisionFn r);
+
+    // attach a component of type T (constructed from args), replacing any existing one.
+    template <class T, class... Args>
+    T& addComponent(Args&&... args) {
+        auto p = std::make_shared<T>(std::forward<Args>(args)...);
+        T& ref = *p;
+        components[std::type_index(typeid(T))] = std::move(p);
+        return ref;
+    }
+    // fetch component T, or nullptr if this entity has none.
+    template <class T>
+    T* get() {
+        auto it = components.find(std::type_index(typeid(T)));
+        return it == components.end() ? nullptr : static_cast<T*>(it->second.get());
+    }
+    template <class T>
+    bool has() const { return components.find(std::type_index(typeid(T))) != components.end(); }
+
+    template <class T>
+    void removeComponent() { components.erase(std::type_index(typeid(T))); }
 
     void update(float dt);                          // runs every behavior on this entity
     void onHit(Entity& other, SceneContext& ctx);   // runs every collision responder

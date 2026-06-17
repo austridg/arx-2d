@@ -17,14 +17,25 @@ struct Camera {
     float rotation = 0.0f;   // degrees (raylib's convention)
     float zoom     = 1.0f;
 
+    // --- screen-shake state (ticked by the scene each frame; applied in raw()) ---
+    float shakeMag = 0.0f, shakeDur = 0.0f, shakeTime = 0.0f;
+    Vec2  shakeOffset;
+
     // a camera whose offset is the current window's center -- the common follow-cam
     // setup, so `target` lands in the middle of the screen.
     static Camera centered();
 
-    Camera2D raw() const;    // hand off to BeginMode2D
+    Camera2D raw() const;    // hand off to BeginMode2D (includes any shake offset)
 
     void follow(const Entity& e);                              // snap target onto the entity
     void followSmooth(const Entity& e, float dt, float speed); // ease target toward the entity (lazy cam)
+
+    // keep the visible rect inside [min,max] world bounds (viewSize = screen px). If the
+    // world is smaller than the view on an axis, it centers on that axis instead.
+    void clampToBounds(Vec2 min, Vec2 max, Vec2 viewSize);
+
+    void shake(float magnitude, float duration);   // kick off a decaying screen shake
+    void update(float dt);                          // advance the shake (Scene calls this)
 
     Vec2 screenToWorld(Vec2 screen) const;   // e.g. mouse position -> world (picking)
     Vec2 worldToScreen(Vec2 world) const;
