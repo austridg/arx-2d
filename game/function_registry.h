@@ -3,6 +3,8 @@
 #include <unordered_map>
 #include <string>
 
+namespace arx {
+
 // A named store of reusable functions. Instantiate it for whatever callable
 // shape you want to organize, e.g.:
 //
@@ -26,3 +28,5 @@ public:
         return it != fns.end() ? it->second : Fn{};
     }
 };
+
+} // namespace arx

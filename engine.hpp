@@ -34,6 +34,7 @@
 // --- engine: core ----------------------------------------------------------
 #include "game/input.h"             // Input: action -> key bindings, isDown/isPressed/isReleased
 #include "game/function_registry.h" // FunctionRegistry: named, reusable functions
+#include "game/camera.h"            // Camera: a 2D follow-cam the scene draws through
 #include "game/game.h"              // Game (window + loop) and Rng
 #include "game/scene.h"             // Scene + SceneContext
 

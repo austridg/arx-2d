@@ -2,6 +2,8 @@
 
 #include <functional>
 
+namespace arx {
+
 class Entity;
 
 // A behavior is one piece of per-frame logic attached to an Entity: movement,
@@ -16,3 +18,5 @@ class Entity;
 // genres differ: the SAME Entity becomes a ship, a platformer hero, or a Zelda
 // character depending on which movement behavior it carries.
 using BehaviorFn = std::function<void(Entity& self, float dt)>;
+
+} // namespace arx

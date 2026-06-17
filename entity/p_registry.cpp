@@ -1,5 +1,7 @@
 #include "p_registry.h"
 
+namespace arx {
+
 Entity* PersistentRegistry::add(std::unique_ptr<Entity> e) {
     Entity* ptr = e.get();
     entities.push_back(std::move(e));
@@ -17,3 +19,5 @@ void PersistentRegistry::reapDead() {
         entities.end()
     );
 }
+
+} // namespace arx

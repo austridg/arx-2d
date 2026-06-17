@@ -1,5 +1,7 @@
 #include "game.h"
 
+namespace arx {
+
 /*
 === === ===
 RNG
@@ -129,3 +131,5 @@ Input&                         Game::getInput()     { return input; }
 PersistentRegistry&            Game::getPersistent(){ return persistent; }
 FunctionRegistry<SceneScript>& Game::getScripts()   { return scripts; }
 FunctionRegistry<BehaviorFn>&  Game::getBehaviors() { return behaviors; }
+
+} // namespace arx

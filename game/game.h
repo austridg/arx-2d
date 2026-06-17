@@ -11,6 +11,8 @@
 #include "function_registry.h"
 #include "entity/p_registry.h"   // PersistentRegistry
 
+namespace arx {
+
 class Rng {
 private:
     std::mt19937 engine;
@@ -68,3 +70,5 @@ public:
     FunctionRegistry<SceneScript>& getScripts();
     FunctionRegistry<BehaviorFn>& getBehaviors();
 };
+
+} // namespace arx

@@ -2,6 +2,8 @@
 
 #include <cmath>
 
+namespace arx {
+
 // A 2D vector: a position, a velocity, or a direction. Bundles x/y so movement
 // math reads as one expression (position = position + velocity * dt).
 struct Vec2 {
@@ -30,3 +32,5 @@ struct Vec2 {
         return { std::cos(radians), std::sin(radians) };
     }
 };
+
+} // namespace arx

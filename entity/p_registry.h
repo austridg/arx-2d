@@ -8,6 +8,8 @@
 
 #include "entity.h"
 
+namespace arx {
+
 class Entity;
 
 class PersistentRegistry {
@@ -19,3 +21,5 @@ public:
 
     void reapDead();
 };
+
+} // namespace arx

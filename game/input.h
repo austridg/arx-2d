@@ -5,6 +5,8 @@
 
 #include "raylib.h"
 
+namespace arx {
+
 class Input {
 private:
     std::unordered_map<int, std::vector<int>> bindings;
@@ -19,3 +21,5 @@ public:
     void setBindings(const std::unordered_map<int,std::vector<int>>& b);
     std::unordered_map<int,std::vector<int>> getBindings() const;
 };
+
+} // namespace arx

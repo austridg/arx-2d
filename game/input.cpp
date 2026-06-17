@@ -1,5 +1,7 @@
 #include "input.h"
 
+namespace arx {
+
 void Input::bind(int action,int key) { bindings[action].push_back(key); }
 
 void Input::rebind(int action,int key) { bindings[action] = { key };}
@@ -40,3 +42,5 @@ void Input::setBindings(const std::unordered_map<int,std::vector<int>>& b) {
 std::unordered_map<int,std::vector<int>> Input::getBindings() const { // return snapshot of current bindings, not a reference
     return bindings;
 }
+
+} // namespace arx
