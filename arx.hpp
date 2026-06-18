@@ -26,6 +26,7 @@
 #include "entity/vec2.h"       // Vec2: 2D position/velocity math
 #include "entity/behavior.h"   // Behavior: per-entity logic
 #include "entity/entity.h"     // Entity: a thing in the world
+#include "entity/fade.h"       // Fade component + applyFade behavior (per-entity alpha fade)
 #include "entity/p_registry.h" // PersistentRegistry: entities that outlive scenes
 
 // --- engine: core ----------------------------------------------------------
@@ -34,6 +35,7 @@
 #include "game/timing.h"            // Timer / Interval / Tween + easing curves
 #include "game/audio.h"             // Audio: sound effects + music
 #include "game/blackboard.h"        // Blackboard: global key/value state + save/load
+#include "game/transition.h"        // Transition: fullscreen fade / wipe / scene-change overlay
 #include "game/textutil.h"          // measureText / centeredX-Y helpers
 #include "game/camera.h"            // Camera: a 2D follow-cam the scene draws through
 #include "game/tilecollide.h"       // TileGrid + resolveTileCollision (AABB vs solid tiles)

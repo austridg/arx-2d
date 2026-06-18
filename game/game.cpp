@@ -99,12 +99,17 @@ void Game::run() {
 
         audio.update();   // feed the active music stream
 
+        // advance the transition on REAL frame time (presentation, not simulation):
+        // it plays even while paused, and its onSwap may setActive() this very frame,
+        // so re-read the top scene AFTER ticking it.
+        transition.tick(frame);
+
         // input once per frame (raylib's pressed/released are per render frame);
         // only the top scene updates -> an overlay freezes the scenes beneath it
         Scene* top = sceneStack.empty() ? nullptr : sceneStack.back();
         if (top) {
             SceneContext ctx{ *top, persistent, input, rng, *this, fixedDt };
-            top->handleInput(ctx);
+            if (!transition.locksInput()) { top->handleInput(ctx); }
             if (!paused) {
                 accumulator += frame;
                 while (accumulator >= fixedDt) {
@@ -137,10 +142,12 @@ void Game::run() {
                 Rectangle src{ 0.0f, 0.0f, (float)virtualW, -(float)virtualH };   // flip Y (RT is upside down)
                 Rectangle dst{ ox, oy, dw, dh };
                 DrawTexturePro(virtualTarget.texture, src, dst, { 0.0f, 0.0f }, 0.0f, WHITE);
+                transition.paint();   // over the blit AND the letterbox bars (window space)
             EndDrawing();
         } else {
             BeginDrawing();
                 drawStack();
+                transition.paint();   // on top of everything, window space
             EndDrawing();
         }
     }
@@ -206,6 +213,24 @@ void Game::popScene() {
     sceneStack.back()->exit(ctx);   // the revealed scene below is NOT re-entered (preserved)
     sceneStack.pop_back();
 }
+
+void Game::transitionTo(int sceneId, float outDur, float inDur, Color color) {
+    // fade out -> swap scenes while fully covered (onExit/onEnter run behind the
+    // cover, so the new scene's first frames play under the fade -- no pop) -> fade in.
+    transition.runSwap(outDur, inDur, color, [this, sceneId]() { setActive(sceneId); });
+}
+
+void Game::fadeOut(float dur, Color color, std::function<void()> onDone) {
+    transition.fadeOut(dur, color, std::move(onDone));
+}
+
+void Game::fadeIn(float dur, Color color) { transition.fadeIn(dur, color); }
+
+void Game::flash(Color color, float dur) { transition.flash(color, dur); }
+
+bool Game::inTransition() const { return transition.active; }
+
+Transition& Game::getTransition() { return transition; }
 
 int                            Game::getWindowWidth() { return windowSizeWidth; }
 int                            Game::getWindowHeight() { return windowSizeHeight; }

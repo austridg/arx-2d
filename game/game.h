@@ -12,6 +12,7 @@
 #include "function_registry.h"
 #include "audio.h"               // Audio: sound + music
 #include "blackboard.h"          // Blackboard: global key/value state + save/load
+#include "transition.h"          // Transition: fullscreen fade / wipe / scene-change overlay
 #include "entity/p_registry.h"   // PersistentRegistry
 
 namespace arx {
@@ -50,6 +51,11 @@ private:
     float accumulator = 0.0f;
     bool  paused = false;
 
+    // fullscreen transition overlay (fades / wipes / scene changes). Ticked on real
+    // frame time and drawn last, so it plays even while paused and covers the
+    // letterbox in virtual-resolution mode. Locks scene input while running.
+    Transition transition;
+
     // optional virtual resolution: render the scenes into a fixed-size target, then
     // scale it (letterboxed) to the window. Off by default -> native window coords.
     int  virtualW = 0, virtualH = 0;
@@ -84,6 +90,15 @@ public:
     void setActive(int id);     // replace the stack with this scene; exits old top, enters new
     void pushScene(int id);     // overlay a scene on top (scenes beneath keep drawing, frozen)
     void popScene();            // remove the top scene, revealing the one beneath (preserved)
+
+    // transitions: fullscreen fades / scene changes. While any of these run, scene
+    // input is suppressed automatically (you can't act into a fading screen).
+    void transitionTo(int sceneId, float outDur = 0.3f, float inDur = 0.3f, Color color = BLACK);
+    void fadeOut(float dur, Color color = BLACK, std::function<void()> onDone = nullptr);
+    void fadeIn(float dur, Color color = BLACK);
+    void flash(Color color = WHITE, float dur = 0.15f);   // quick cover+reveal (damage / stinger)
+    bool inTransition() const;
+    Transition& getTransition();   // for custom render hooks (transitions::wipe / iris) or tuning
 
     void run();
 
