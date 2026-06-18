@@ -32,11 +32,11 @@ public:
 
 class Game {
 private:
-    int windowSizeWidth = 1280, windowSizeHeight = 720;
+    int windowSizeWidth = 1920, windowSizeHeight = 1080;
     int fpsTarget = 60;
     bool startFullscreen = false;
 
-    std::string gameTitle = "2d-ge";
+    std::string gameTitle = "ARX - Demo Game";
 
     Rng rng;
     Input input;
@@ -102,6 +102,8 @@ public:
     void setVirtualResolution(int w, int h);
 
     // accessors
+    int getWindowWidth();
+    int getWindowHeight();
     Rng& getRng();
     Input& getInput();
     Audio& getAudio();

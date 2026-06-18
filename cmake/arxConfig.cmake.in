@@ -1,0 +1,8 @@
+@PACKAGE_INIT@
+
+# arx links rad2d through its PUBLIC interface, so consumers that
+# find_package(arx) need rad2d resolved too (which in turn pulls in raylib).
+include(CMakeFindDependencyMacro)
+find_dependency(rad2d)
+
+include("${CMAKE_CURRENT_LIST_DIR}/arxTargets.cmake")

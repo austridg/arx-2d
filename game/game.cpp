@@ -207,6 +207,8 @@ void Game::popScene() {
     sceneStack.pop_back();
 }
 
+int                            Game::getWindowWidth() { return windowSizeWidth; }
+int                            Game::getWindowHeight() { return windowSizeHeight; }
 Rng&                           Game::getRng()       { return rng; }
 Input&                         Game::getInput()     { return input; }
 Audio&                         Game::getAudio()     { return audio; }
